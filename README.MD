@@ -1,19 +1,24 @@
 # Simpler Key store
-, `Different passwords`, `One key, one file`
 
-**Simple API**  
+## Simple API
 Designed to store the keys in a secure and easy way, when all that you think about is 
 to store the key and get the key.  
 
-**Different passwords**   
-Each stored key can be protected with different password.  
+## Different passwords
+Each stored key can be protected with different password
 
-**One key, one file**   
+## One key, one file
 Directory with the keys, rather than all keys in a single file. It makes integrations easier with the 
 key access loggers, intrusion detection systems, decoy files, etc.
 
+## Flexible algorithms
+Support for multiple key derivation and encryption algorithms at once.
+API for custom key derivation and encryption algorithms.
+
+
 > [!WARNING]
 > Supported key pairs encodings are X509 for public and PKCS8 for private keys.
+
 ---
 
 ### [How to install](docs/Installation.md) 
@@ -23,4 +28,3 @@ key access loggers, intrusion detection systems, decoy files, etc.
 
 ## Requirements
 - Java 25
-- Designed for the OpenJDK
