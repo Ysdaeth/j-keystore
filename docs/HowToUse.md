@@ -1,7 +1,7 @@
 # How to use
 
 ## Add the dependency
-First lets add the dependency
+First, add the dependency to your `pom.xml`:
 ```xml
 <dependency>
     <groupId>dev.ysdaeth.keystore</groupId>
@@ -11,92 +11,111 @@ First lets add the dependency
 ```
 
 ---
-## Create the key store
-Make sure that Keystore is from the `dev.ysdaeth.keystore package`, Java KeyStore has similar name.  
-Keystore will create a directory in the specified `keyStorePath`.
-In the directory `keyStoreName` will be placed encrypted keys.
 
-### All default
-Creates instance with default key derivers and encryption algorithm
-PBKDF2 for key derivation and AES-GCM for encryption.
-Path is argument where keystore will be created.
+## Create the keystore
+> [!IMPORTANT]
+> Make sure to import `dev.ysdaeth.keystore.Keystore`, not `java.security.KeyStore`.
+
+`Keystore` creates a directory at the specified `keyStorePath` where all key files will be stored.
+
+### Default configuration
+Creates an instance using the default key derivation (PBKDF2) and encryption (AES-GCM) algorithms:
 ```java
-KeyStore keyStore = new KeyStore(Path keyStorePath);
+Path keyStorePath = Path.of("/path/to/keystore");
+Keystore keystore = new Keystore(keyStorePath);
 ```
 
-### All default
-Creates instance with default key derivers and custom encryption algorithm factory.
-PBKDF2 for key derivation and AES-GCM for encryption.
-Path is argument where keystore will be created, EntrySecurerFactory is factory that will provide EntrySecurer(s).
+### Custom encryptor factory
+Creates an instance using a custom `EntrySecurerFactory` to provide your own encryption and key derivation logic:
 ```java
-KeyStore keyStore = new KeyStore(Path keyStorePath, EntrySecurerFactory factory);
+Path keyStorePath = Path.of("/path/to/keystore");
+EntrySecurerFactory factory = new CustomSecurerFactory(new DefaultKeyDeriverFactory());
+Keystore keystore = new Keystore(keyStorePath, factory);
 ```
 
-### All default
-Creates instance with custom key derivers and encryption algorithm factory.
-Path is argument where keystore will be created, EntrySecurerFactory is factory that will provide EntrySecurer(s).
-It supports multiple entry securer factories
+### Multiple factories (Algorithm Migration)
+Supports multiple `EntrySecurerFactory` implementations simultaneously. 
+**The first factory in the list** is used to encrypt newly saved entries, 
+while all provided factories can be used to decrypt existing ones:
 ```java
-KeyStore keystore = new KeyStore(Path keyStorePath, List<EntrySecurerFactory> factoryList);
+Path keyStorePath = Path.of("/path/to/keystore");
+List<EntrySecurerFactory> factories = List.of(newNewerSecurerFactory, legacySecurerFactory);
+Keystore keystore = new Keystore(keyStorePath, factories);
 ```
 
 ---
 
-## Store the key
-Keystore supports storing encrypted: Key, SecretKey, PrivateKey, PublicKey. 
-It is also possible to store PublicKey not encrypted as a DER PEM format.
-There can be key alias duplicates for asymmetric keys,
-that means there can be saved "alias-name" alias for PrivateKey and it 
-is possible to save PublicKey later
+## Store a key
+`Keystore` supports encrypting and storing `Key`, `SecretKey`, `PrivateKey`, `PublicKey`, and `KeyPair` instances. 
+You can also store an unencrypted `PublicKey` in PEM format.
 
-### Encrypt and store
-SecretKey is used as an example, but it works also for Key, PrivateKey and PublicKey
+Asymmetric keys can share the same alias—for example, you can save a `PrivateKey` under `"alias-name"` and later save 
+its corresponding `PublicKey` under the exact same `"alias-name"`.
+
+### Encrypt and store a key
+Works with `SecretKey`, `PrivateKey`, `PublicKey`, or a generic `Key`:
 ```java
-SecretKey keyToStore = // generate key.
-String alias = "key-alias"; 
-char[] password = "password".toCharArray(); // password that will be used to encrypt the key
+SecretKey keyToStore = // generate key
+String alias = "key-alias";
+char[] password = "password".toCharArray();
 
 keystore.save(keyToStore, alias, password);
 ```
 
-### Store plain PublicKey
-It is possible to store PublicKey in DER PEM file format.
+### Store a KeyPair
+Saves the `PrivateKey` encrypted with the password and the `PublicKey` as an unencrypted PEM file under the same alias:
+```java
+KeyPair keyPair = // generate key pair
+String alias = "my-keypair";
+char[] password = "password".toCharArray();
+
+keystore.save(keyPair, alias, password);
+```
+
+### Store a plain PublicKey
+You can store a `PublicKey` without encryption as a PEM file:
 ```java
 PublicKey publicKey = // generate public key
-String alias = "pub-key"
+String alias = "pub-key";
+
 keystore.save(publicKey, alias);
 ```
 
 > [!TIP]
-> Each unsecuredEntry is encrypted with a different random key to give you more time for the password rotation when key store leaks,
-> but leaking the keystore and password may be catastrophic. Remember that you can use
-> different passwords for each keystore entry
-
+> Each entry is encrypted with a unique random key/salt to buy you time for key rotation if 
+> the keystore directory leaks. However, leaking both the keystore and the password compromises the key.
 
 ---
 
-## Find stored key
-When the key is already stored, it is possible to load it from the keystore as Optional.
-If password is incorrect, then exception is thrown.
+## Find a stored key
+Stored keys are returned wrapped as an `Optional`. If an incorrect password is provided for an encrypted 
+key, exception`InvalidPasswordException` is thrown.
 
-### Find encrypted public key 
-When public key was not encrypted, the password will be sipped and public key returned
+### Find a secret key
 ```java
-keystore.findPublicKey(alias, password);
+Optional<SecretKey> secretKey = keystore.findSecretKey(alias, password);
 ```
 
-### Find public key
-When key was encryped, then invalid password exception will be thrown.
+### Find a private key
 ```java
-keystore.findPublicKey(alias);
+Optional<PrivateKey> privateKey = keystore.findPrivateKey(alias, password);
 ```
 
-### Find private key
+### Find an encrypted public key
+If the public key was stored unencrypted, the password is skipped and the public key is returned:
 ```java
-keystore.findPrivateKey(alias, password)
+Optional<PublicKey> publicKey = keystore.findPublicKey(alias, password);
 ```
 
-### Find key pair
+### Find an unencrypted public key
+If the key was encrypted, calling this method without a password throws an `InvalidPasswordException`:
 ```java
-keystore.findKeyPair(alias, password)
+Optional<PublicKey> publicKey = keystore.findPublicKey(alias);
 ```
+
+### Find a key pair
+```java
+Optional<KeyPair> keyPair = keystore.findKeyPair(alias, password);
+```
+
+---
