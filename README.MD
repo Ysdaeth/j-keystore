@@ -1,30 +1,31 @@
-# Simpler Key store
+# Simple Key Store
 
-## Simple API
-Designed to store the keys in a secure and easy way, when all that you think about is 
-to store the key and get the key.  
+## Store and retrieve cryptographic keys in the easy way
 
-## Different passwords
-Each stored key can be protected with different password
+### Focus on managing your keys, not how to retrieve them.
+Standard `java.security.KeyStore` requires verbose setup, streams, and casting just to read or write a key pair. 
+**Simpler Key Store** eliminates that boilerplate with a clean, straightforward API.
 
-## One key, one file
-Directory with the keys, rather than all keys in a single file. It makes integrations easier with the 
-key access loggers, intrusion detection systems, decoy files, etc.
+### One key, one password
+Each stored entry can be encrypted with its own password.  
+By default, keys are derived using PBKDF2 with HmacSHA256 and encrypted with AES-GCM.
 
-## Flexible algorithms
-Support for multiple key derivation and encryption algorithms at once.
-API for custom key derivation and encryption algorithms.
+### One key, one file
+Keys are stored as separate files in a directory rather than bundled into monolithic file. This simplifies integration with file access loggers, intrusion detection systems, decoy files, and granular OS-level permissions.
+
+### Highly customizable
+Unlike `java.security.KeyStore`, this library lets you create your own key derivation and encryption logic.  
+It supports multiple key derivation functions and encryptors at once.
+
+---  
 
 
 > [!WARNING]
-> Supported key pairs encodings are X509 for public and PKCS8 for private keys.
+> Supported key pair encodings are **X.509** for public keys and **PKCS#8** for private keys.
 
----
-
-### [How to install](docs/Installation.md) 
-### [How to use](docs/HowToUse.md)
-
----
+## Documentation
+- [How to install](docs/Installation.md) 
+- [How to use](docs/HowToUse.md)
 
 ## Requirements
-- Java 25
+* Java 25
