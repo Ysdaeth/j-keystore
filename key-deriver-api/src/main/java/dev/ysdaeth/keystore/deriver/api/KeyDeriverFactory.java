@@ -14,7 +14,6 @@ public abstract class KeyDeriverFactory {
 
         validateDerivers(keyDerivers);
         this.keyDerivers = toMap(keyDerivers);
-        ifNullEx(getDefault(),"Default key deriver mus not return null");
     }
 
     /**

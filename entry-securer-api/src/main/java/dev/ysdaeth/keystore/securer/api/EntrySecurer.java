@@ -61,6 +61,12 @@ public abstract class EntrySecurer {
             argEx("Key deriver factories has duplicated key derivers: "+ names);
         }
 
+        for(KeyDeriverFactory factory: factories){
+            ifNullEx(factory.getDefault(),
+                    "factory '%s' returned null as default KeyDeriver"
+                            .formatted(factory.getClass())
+            );
+        }
     }
 
     private static void argEx(String msgEx) throws IllegalArgumentException {

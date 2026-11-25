@@ -39,7 +39,7 @@ public abstract class EntrySecurerFactory {
     }
 
     private static void argEx(String message) throws IllegalStateException{
-        throw new IllegalStateException(message);
+        throw new IllegalArgumentException(message);
     }
 
     private static void ifNullEx(Object o, String msg)
