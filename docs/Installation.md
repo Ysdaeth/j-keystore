@@ -14,7 +14,7 @@ Packages are available do download with GitHub package repository, but not with 
 
 ### Alternatively, download repository and install locally
 ```shell
-git clone https://github.com/Ysdaeth/j-key-store.git
+git clone https://github.com/Ysdaeth/j-keystore.git
 cd j-keystore
 sudo mvn clean install
 ```

@@ -4,7 +4,7 @@ target/
 !**/src/test/**/target/
 .kotlin
 
-tests/src/test/resources/temp
+tests/src/test/resources/temp/
 
 ## IDE
 .idea

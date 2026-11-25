@@ -68,7 +68,7 @@
     <repository>
       <id>gh-ysdaeth-j-keystore</id>
       <name>GitHub Ysdaeth Apache Maven Packages</name>
-      <url>https://maven.pkg.github.com/Ysdaeth/j-key-store</url>
+      <url>https://maven.pkg.github.com/Ysdaeth/j-keystore</url>
     </repository>
   </distributionManagement>
 </project>
