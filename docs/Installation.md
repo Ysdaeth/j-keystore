@@ -8,13 +8,13 @@ Packages are available do download with GitHub package repository, but not with 
 ```xml
 <repository>
     <id>gh-ys-j-key-store</id>
-    <url>https://maven.pkg.github.com/Ysdaeth/j-key-store</url>
+    <url>https://maven.pkg.github.com/Ysdaeth/j-keystore</url>
 </repository>
 ```
 
 ### Alternatively, download repository and install locally
 ```shell
 git clone https://github.com/Ysdaeth/j-key-store.git
-cd j-key-store
+cd j-keystore
 sudo mvn clean install
 ```
